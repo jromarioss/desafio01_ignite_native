@@ -2,9 +2,10 @@ import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
 import Checkbox from "expo-checkbox";
 
 import { styles } from "./styles";
+import { TodosProps } from "../..";
 
 interface TodoListProps {
-  todos: string[];
+  todos: TodosProps[];
   onMarkDone: (item: string) => void;
   onDeleteTodo: (item: string) => void;
 }
@@ -15,28 +16,35 @@ export function TodoList({ todos, onDeleteTodo, onMarkDone }: TodoListProps) {
     <View style={styles.container}>
       <FlatList 
         data={todos}
-        keyExtractor={item => item}
+        keyExtractor={item => item.title}
         renderItem={({ item }) => (
-          <View style={styles.list} key={item}>
-            <Checkbox
-              onValueChange={() => onMarkDone(item)}
-              style={styles.checkBox}
-            />
-
+          <View style={styles.list} key={item.title}>
+            {!item.done ?
+              <Checkbox
+                onValueChange={() => onMarkDone(item.title)}
+                style={styles.checkBox}
+              />
+              :
+              <TouchableOpacity onPress={() => onMarkDone(item.title)}>
+                <Image 
+                  source={require('../../../../../assets/checked.png')}
+                  style={styles.checkBox}
+                />
+              </TouchableOpacity>
+              
+            }
+           
+            {!item.done ? 
               <Text style={styles.ListText}>
-                { item }
-              </Text>
-
-            {/* {!isChecked ? 
-              <Text style={styles.ListText}>
-                { item }
+                { item.title }
               </Text>
               :
               <Text style={styles.ListTextlineThrough}>
-                { item }
+                { item.title }
               </Text>
-            } */}
-            <TouchableOpacity onPress={() => onDeleteTodo(item)}>
+            }
+            
+            <TouchableOpacity onPress={() => onDeleteTodo(item.title)}>
               <Image
                 source={require('../../../../../assets/trash.png')}
                 style={{ width: 50, height: 50 }}

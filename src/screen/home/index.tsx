@@ -12,10 +12,10 @@ export interface TodosProps {
 
 export function Home() {
   const [todos, setTodos] = useState<TodosProps[]>([]);
-  const [todoItem, setTodoItem] = useState('');
+  const [todoItem, setTodoItem] = useState<string>('');
 
   const todoCount = todos.reduce((acc, todo) => {
-    if (todo) {
+    if (todo.done) {
       acc.done++;
     }
     acc.total++;
@@ -26,6 +26,11 @@ export function Home() {
   })
 
   function handleAddTodo() {
+    const todoAlreadyExists = todos.find(todo => todo.title === todoItem);
+
+    if (todoAlreadyExists) {
+      return Alert.alert("Tarefa já existente", "Está tarefa já existe na sua lista.");
+    }
 
     const newTodo: TodosProps = {
       title: todoItem,
@@ -67,6 +72,7 @@ export function Home() {
           placeholderTextColor="#808080"
           onChangeText={setTodoItem}
           value={todoItem}
+          returnKeyType="send"
         />
         <TouchableOpacity style={styles.inputButton} onPress={handleAddTodo}>
           <Text style={styles.inputText}>
@@ -80,7 +86,7 @@ export function Home() {
             Criadas
           </Text>
           <Text style={styles.todoTextNumber}>
-            {todos.length}
+            {todoCount.total}
           </Text>
         </View>
         <View style={styles.todoText}>
@@ -88,11 +94,11 @@ export function Home() {
             Concluídas
           </Text>
           <Text style={styles.todoTextNumber}>
-            {todos.length}
+            {todoCount.done}
           </Text>
         </View>
       </View>
-      <TodoList todos={todos}  onDeleteTodo={handleDeleteTodo} onMarkDone={handleMarkDone} />
+      <TodoList todos={todos} onDeleteTodo={handleDeleteTodo} onMarkDone={handleMarkDone} />
     </View>
   );
 }
